@@ -7004,6 +7004,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     ProgressDialog mBootMsgDialog = null;
 
+    static String currentPackageName;
+    public void setPackageName(String pkgName) {
+        if (pkgName == null) {
+            pkgName = "";
+        }
+        this.currentPackageName = pkgName;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void showBootMessage(final CharSequence msg, final boolean always) {
@@ -7063,7 +7071,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.setCancelable(false);
                     mBootMsgDialog.show();
                 }
-                mBootMsgDialog.setMessage(msg);
+                if (always && (currentPackageName != null)) {
+                    mBootMsgDialog.setMessage(msg + "\n" + currentPackageName);
+                } else {
+                    mBootMsgDialog.setMessage(msg);
+                }
             }
         });
     }

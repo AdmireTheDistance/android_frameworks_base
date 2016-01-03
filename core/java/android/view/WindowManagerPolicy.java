@@ -1165,6 +1165,8 @@ public interface WindowManagerPolicy {
      */
     public void systemBooted();
 
+    public void setPackageName(String pkgName);
+
     /**
      * Show boot time message to the user.
      */

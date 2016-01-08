@@ -138,6 +138,18 @@ public class AudioManager {
     public static final String VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION";
 
     /**
+    * @hide Broadcast intent when the number of volume steps changes
+    * Includes the stream and the new max volume index
+    * Notes:
+    *  - for internal platform use only, do not make public
+    *
+    * @see #EXTRA_VOLUME_STREAM_TYPE
+    * @see #EXTRA_VOLUME_STEPS_MAX_INDEX
+    */
+    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+    public static final String VOLUME_STEPS_CHANGED_ACTION = "android.media.VOLUME_STEPS_CHANGED_ACTION";
+
+    /**
      * @hide Broadcast intent when the devices for a particular stream type changes.
      * Includes the stream, the new devices and previous devices.
      * Notes:
@@ -976,6 +988,22 @@ public class AudioManager {
             Log.e(TAG, "Dead object in getStreamMinVolume", e);
             return 0;
         }
+    }
+
+    public void setStreamMaxVolume(int streamType, int maxVol) {
+    	IAudioService service = getService();
+    	try {
+    		double previousMax = new Integer(getStreamMaxVolume(streamType)).doubleValue();
+    		double previousVolume = new Integer(getStreamVolume(streamType)).doubleValue();
+    		double newMax = new Integer(maxVol).doubleValue();
+    		double newVolume = Math.floor((newMax / previousMax) * previousVolume);
+
+    		service.setStreamMaxVolume(streamType, maxVol);
+
+    		setStreamVolume(streamType, new Double(newVolume).intValue(), 0);
+    	}
+    } catch (RemoteException e) {
+    	e.printStackTrace();
     }
 
     /**

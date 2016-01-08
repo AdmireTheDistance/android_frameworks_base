@@ -146,6 +146,6 @@
     <color name="volume_slider_inactive">#FFB0BEC5</color><!-- blue grey 200 -->
 
      <!-- Floating action button -->
-    <color name="fab_color">system_secondary_color</color>
+    <color name="fab_color">@color/system_secondary_color</color>
     <color name="floating_action_button_icon_color">#ffffff</color>
 </resources>

@@ -388,7 +388,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
 
     /** Animates this task view away when dismissing all tasks. */
     void startDismissAllAnimation() {
-        dismissTask();
+        dismissTask(0L);
     }
 
     /** Animates this task view as it exits recents */
@@ -482,7 +482,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
     }
 
     /** Dismisses this task. */
-    void dismissTask() {
+    void dismissTask(long delayed) {
         // Animate out the view and call the callback
         final TaskView tv = this;
         startDeleteTaskAnimation(new Runnable() {
@@ -743,7 +743,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
                             }
                         }
                     } else if (v == mHeaderView.mDismissButton) {
-                        dismissTask();
+                        dismissTask(0L);
                         // Keep track of deletions by the dismiss button
                         MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
                                 Constants.Metrics.DismissSourceHeaderButton);

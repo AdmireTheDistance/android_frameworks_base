@@ -55,5 +55,125 @@
         android:scaleType="fitXY"
         android:src="@drawable/recents_lower_gradient" />
 
+    <RelativeLayout
+        android:id="@+id/recents_system_info"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_weight="1.0"
+        android:layout_gravity="top"
+        android:background="#b3000000"
+        android:layout_marginTop="25dp">
+
+        <ImageView
+            android:id="@+id/recents_cpu_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginRight="8dp"
+            android:src="@drawable/recents_cpu"
+            android:layout_weight="1.0"
+            android:layout_toLeftOf="@+id/cpu_frame"
+            android:layout_centerVertical="true" />
+
+        <FrameLayout
+            android:id="@+id/cpu_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="12dp"
+            android:layout_toLeftOf="@+id/current_network"
+            android:layout_centerVertical="true">
+
+            <com.android.systemui.morningstar.CPUFrequency
+                android:textSize="12.0sp"
+                android:textColor="#fffafafa"
+                android:layout_gravity="top"
+                android:id="@+id/recents_cpu_frequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <View
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/horizontal_divider"
+                android:layout_width="80dp"
+                android:layout_height="1dp" />
+
+            <com.android.systemui.morningstar.CPUTemperature
+                android:textSize="12.0sp"
+                android:textColor="#fffafafa"
+                android:layout_gravity="bottom"
+                android:id="@+id/recents_cpu_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:id="@+id/recents_top_divider"
+            android:background="@drawable/divider_vertical"
+            android:visibility="invisible"
+            android:layout_width="1dp"
+            android:layout_height="52dp"
+            android:layout_centerInParent="true" />
+
+        <com.android.systemui.morningstar.CurrentNetwork
+            android:textSize="12.0sp"
+            android:textColor="#fffafafa"
+            android:gravity="top"
+            android:id="@+id/current_network"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="3dp"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:id="@+id/recents_battery_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/recents_battery"
+            android:layout_weight="1.0"
+            android:layout_toRightOf="@+id/battery_frame"
+            android:layout_centerVertical="true" />
+
+        <FrameLayout
+            android:id="@+id/battery_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="12dp"
+            android:layout_toRightOf="@+id/current_network"
+            android:layout_centerVertical="true">
+
+            <com.android.systemui.morningstar.BatteryVoltage
+                android:textSize="12.0sp"
+                android:textColor="#fffafafa"
+                android:layout_gravity="end|center|top"
+                android:id="@+id/recents_battery_voltage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <View
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/horizontal_divider2"
+                android:layout_width="80dp"
+                android:layout_height="1dp" />
+
+            <com.android.systemui.morningstar.BatteryTemperature
+                android:textSize="12.0sp"
+                android:textColor="#fffafafa"
+                android:layout_gravity="end|bottom|center"
+                android:id="@+id/recents_battery_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
     <include layout="@layout/floating_action_button" />
+    
 </FrameLayout>

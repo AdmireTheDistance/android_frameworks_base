@@ -264,9 +264,13 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
             boolean showSearchBar = CMSettings.System.getInt(getContentResolver(),
                        CMSettings.System.RECENTS_SHOW_SEARCH_BAR, 1) == 1;
 
+            boolean showSystemInfo = Settings.System.getInt(getContentResolver(),
+                       Settings.System.RECENTS_SHOW_SYSTEM_INFO, 0) == 1;
+
             if (mRecentsView.hasValidSearchBar()) {
                 if (showSearchBar) {
                     mRecentsView.setSearchBarVisibility(View.VISIBLE);
+                    findViewById(R.id.recents_system_info).setVisibility(View.GONE);
                 } else {
                     mRecentsView.setSearchBarVisibility(View.GONE);
                 }
@@ -274,6 +278,14 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
                 if (showSearchBar) {
                     refreshSearchWidgetView();
                 }
+            }
+
+            if (showSystemInfo) {
+                CMSettings.System.putInt(getContentResolver(), CMSettings.System.RECENTS_SHOW_SEARCH_BAR, 0);
+                mRecentsView.setSearchBarVisibility(View.GONE);
+                findViewById(R.id.recents_system_info).setVisibility(View.VISIBLE);
+            } else {
+                 findViewById(R.id.recents_system_info).setVisibility(View.GONE);
             }
 
             // Update search bar space height

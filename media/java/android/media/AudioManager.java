@@ -1001,9 +1001,9 @@ public class AudioManager {
     		service.setStreamMaxVolume(streamType, maxVol);
 
     		setStreamVolume(streamType, new Double(newVolume).intValue(), 0);
+    	} catch (RemoteException e) {
+    		e.printStackTrace();
     	}
-    } catch (RemoteException e) {
-    	e.printStackTrace();
     }
 
     /**

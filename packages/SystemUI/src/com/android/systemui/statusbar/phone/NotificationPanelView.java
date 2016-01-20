@@ -21,12 +21,15 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.app.ActivityManager;
 import android.app.StatusBarManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
@@ -77,6 +80,7 @@ import cyanogenmod.externalviews.KeyguardExternalView;
 import cyanogenmod.providers.CMSettings;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.cyanogenmod.internal.util.CmLockPatternUtils;
 
@@ -227,6 +231,7 @@ public class NotificationPanelView extends PanelView implements
 
     private ComponentName mThirdPartyKeyguardViewComponent;
     private KeyguardExternalView mKeyguardExternalView;
+    private CmLockPatternUtils mLockPatternUtils;
 
     private Runnable mHeadsUpExistenceChangedRunnable = new Runnable() {
         @Override
@@ -279,7 +284,6 @@ public class NotificationPanelView extends PanelView implements
         mQsPanel = (QSPanel) findViewById(R.id.quick_settings_panel);
         mClockView = (TextView) findViewById(R.id.clock_view);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll_view);
-        mScrollView.setListener(this);
         mScrollView.setFocusable(false);
         mReserveNotificationSpace = findViewById(R.id.reserve_notification_space);
         mNotificationContainerParent = (NotificationsQuickSettingsContainer)
@@ -314,9 +318,9 @@ public class NotificationPanelView extends PanelView implements
             }
         });
 
-        CmLockPatternUtils lockPatternUtils = new CmLockPatternUtils(getContext());
-        if (lockPatternUtils.isThirdPartyKeyguardEnabled()) {
-            mThirdPartyKeyguardViewComponent = lockPatternUtils.getThirdPartyKeyguardComponent();
+        mLockPatternUtils = new CmLockPatternUtils(getContext());
+        if (mLockPatternUtils.isThirdPartyKeyguardEnabled()) {
+            mThirdPartyKeyguardViewComponent = mLockPatternUtils.getThirdPartyKeyguardComponent();
         }
     }
 
@@ -324,12 +328,17 @@ public class NotificationPanelView extends PanelView implements
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mSettingsObserver.observe();
+        mContext.registerReceiver(mExternalKeyguardViewChangedReceiver,
+                new IntentFilter(CmLockPatternUtils.ACTION_THIRD_PARTY_KEYGUARD_COMPONENT_CHANGED));
+
+        mScrollView.setListener(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mSettingsObserver.unobserve();
+        mContext.unregisterReceiver(mExternalKeyguardViewChangedReceiver);
     }
 
     @Override
@@ -1184,25 +1193,47 @@ public class NotificationPanelView extends PanelView implements
     private KeyguardExternalView.KeyguardExternalViewCallbacks mExternalKeyguardViewCallbacks =
             new KeyguardExternalView.KeyguardExternalViewCallbacks() {
         @Override
-        public void dismiss() {
+        public boolean requestDismiss() {
             if (hasExternalKeyguardView()) {
-                mStatusBar.setBarState(StatusBarState.KEYGUARD);
-                mStatusBar.showBouncer();
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mStatusBar.showKeyguard();
+                        mStatusBar.showBouncer();
+                    }
+                });
+                return true;
             }
+            return false;
         }
 
         @Override
-        public void dismissAndStartActivity(Intent intent) {
+        public boolean requestDismissAndStartActivity(final Intent intent) {
             if (hasExternalKeyguardView()) {
-                mStatusBar.setBarState(StatusBarState.KEYGUARD);
-                mStatusBar.startActivity(intent, true);
+                if (hasExternalKeyguardView()) {
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mStatusBar.showKeyguard();
+                            mStatusBar.startActivity(intent, true);
+                        }
+                    });
+                }
+                return true;
             }
+            return false;
         }
 
         @Override
         public void collapseNotificationPanel() {
-            if (mStatusBar.getBarState() == StatusBarState.KEYGUARD && hasExternalKeyguardView()) {
-                mStatusBar.focusKeyguardExternalView();
+            if (mStatusBar.getBarState() == StatusBarState.KEYGUARD && hasExternalKeyguardView() &&
+                    mKeyguardExternalView.isInteractive()) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mStatusBar.focusKeyguardExternalView();
+                    }
+                });
             }
         }
 
@@ -1211,6 +1242,26 @@ public class NotificationPanelView extends PanelView implements
             mKeyguardExternalView.unregisterKeyguardExternalViewCallback(
                     mExternalKeyguardViewCallbacks);
             mKeyguardExternalView = null;
+        }
+    };
+
+    private BroadcastReceiver mExternalKeyguardViewChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String pkgName = getSendingPackage(intent);
+            if (pkgName != null) {
+                PackageManager pm = context.getPackageManager();
+                if (pm.checkPermission(android.Manifest.permission.ACCESS_KEYGUARD_SECURE_STORAGE,
+                        pkgName) != PackageManager.PERMISSION_GRANTED) {
+                    // we should not be here if the sending app does not have the proper permission,
+                    // so do nothing and return.
+                    return;
+                }
+            } else {
+                // null package name?  something is not right so just return and skip doing anything
+                return;
+            }
+            updateExternalKeyguardView();
         }
     };
 
@@ -2634,5 +2685,28 @@ public class NotificationPanelView extends PanelView implements
             // just return null below and move on
         }
         return null;
+    }
+
+    private void updateExternalKeyguardView() {
+        ComponentName cn = mLockPatternUtils.getThirdPartyKeyguardComponent();
+        // If mThirdPartyKeyguardViewComponent differs from cn, go ahead and update
+        if (!Objects.equals(mThirdPartyKeyguardViewComponent, cn)) {
+            mThirdPartyKeyguardViewComponent = cn;
+            if (mKeyguardExternalView != null) {
+                if (indexOfChild(mKeyguardExternalView) >= 0) {
+                    removeView(mKeyguardExternalView);
+                }
+                mKeyguardExternalView.unregisterKeyguardExternalViewCallback(
+                        mExternalKeyguardViewCallbacks);
+                if (mThirdPartyKeyguardViewComponent != null) {
+                    mKeyguardExternalView =
+                            getExternalKeyguardView(mThirdPartyKeyguardViewComponent);
+                    mKeyguardExternalView.registerKeyguardExternalViewCallback(
+                            mExternalKeyguardViewCallbacks);
+                } else {
+                    mKeyguardExternalView = null;
+                }
+            }
+        }
     }
 }

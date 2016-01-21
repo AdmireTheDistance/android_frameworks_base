@@ -2520,4 +2520,8 @@
          automatically try to pair with it when the device exits tablet mode. -->
     <string translatable="false" name="config_packagedKeyboardName"></string>
     <integer name="config_dayColorTemperature">6500</integer>
+
+    <!-- Allow key chords to be used to initialize screen recording -->
+    <bool name="config_enableScreenRecordChord">true</bool>
+    
 </resources>

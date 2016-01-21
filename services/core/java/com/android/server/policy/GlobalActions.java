@@ -201,18 +201,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         awakenIfNecessary();
         prepareDialog();
 
-        // If we only have 1 item and it's a simple press action, just do this action.
-        if (mAdapter.getCount() == 1
-                && mAdapter.getItem(0) instanceof SinglePressAction
-                && !(mAdapter.getItem(0) instanceof LongPressAction)) {
-            ((SinglePressAction) mAdapter.getItem(0)).onPress();
-        } else {
-            WindowManager.LayoutParams attrs = mDialog.getWindow().getAttributes();
-            attrs.setTitle("GlobalActions");
-            mDialog.getWindow().setAttributes(attrs);
-            mDialog.show();
-            mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
-        }
+        WindowManager.LayoutParams attrs = mDialog.getWindow().getAttributes();
+        attrs.setTitle("GlobalActions");
+        mDialog.getWindow().setAttributes(attrs);
+        mDialog.show();
+        mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
     }
 
     private Context getUiContext() {
@@ -328,6 +321,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mItems.add(getVoiceAssistAction());
             } else if (GLOBAL_ACTION_KEY_ASSIST.equals(actionKey)) {
                 mItems.add(getAssistAction());
+            } else if (GLOBAL_ACTION_KEY_SCREEN_RECORD.equals(actionKey)) {
+            	mItems.add(getScreenRecordAction());
             } else {
                 Log.e(TAG, "Invalid global action key " + actionKey);
             }
@@ -594,6 +589,24 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         };
     }
 
+    private Action getScreenRecordAction() {
+    	return new SinglePressAction(com.android.internal.R.drawable.ic_lock_screen_record,
+    			R.string.global_action_screen_record) {
+
+    		public void onPress() {
+    			recordScreen();
+    		}
+
+    		public boolean showDuringKeyguard() {
+    			return true;
+    		}
+
+    		public boolean showBeforeProvisioning() {
+    			return false;
+    		}
+    	};
+    }
+
     private UserInfo getCurrentUser() {
         try {
             return ActivityManagerNative.getDefault().getCurrentUser();
@@ -726,6 +739,72 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mHandler.postDelayed(mScreenshotTimeout, 10000);
             }
         }
+    }
+
+    final Object mScreenRecordLock = new Object();
+    ServiceConnection mScreenRecordConnection = null;
+
+    final Runnable mScreenRecordTimeout = new Runnable() {
+    	@Override
+    	public void run() {
+    		synchronized (mScreenRecordLock) {
+    			if (mScreenRecordConnection != null) {
+    				mContext.unbindService(mScreenRecordConnection);
+    				mScreenRecordConnection = null;
+    			}
+    		}
+    	}
+    };
+
+    private void recordScreen() {
+    	synchronized (mScreenRecordLock) {
+    		if (mScreenRecordConnection != null) {
+    			return;
+    		}
+
+    		ComponentName cn = new ComponentName("com.android.systemui",
+    				"com.android.systemui.screenrecord.ScreenRecordService");
+    		Intent intent = new Intent();
+    		intent.setComponent(cn);
+    		ServiceConnection conn = new ServiceConnection() {
+    			@Override
+    			public void onServiceConnected(ComponentName name, IBinder service) {
+    				synchronized (mScreenRecordLock) {
+    					Messenger messenger = new Messenger(service);
+    					Message msg = Message.obtain(null, 1);
+    					final ServiceConnection myConn = this;
+    					Handler h = new Handler(mHandler.getLooper()) {
+    						@Override
+    						public void handleMessage(Message msg) {
+    							synchronized (mScreenRecordLock) {
+    								if (mScreenRecordConnection == myConn) {
+    									mContext.unbindService(mScreenRecordConnection);
+    									mScreenRecordConnection = null;
+    									mHandler.removeCallbacks(mScreenRecordTimeout);
+    								}
+    							}
+    						}
+    					};
+
+    					msg.replyTo = new Messenger(h);
+    					msg.arg1 = msg.arg2 = 0;
+    					try {
+    						messenger.send(msg);
+    					} catch (RemoteException e) {
+    						e.printStackTrace();
+    					}
+    				}
+    			}
+
+    			@Override
+    			public void onServiceDisconnected(ComponentName name) {}
+    		};
+
+    		if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
+    			mScreenRecordConnection = conn;
+    			mHandler.postDelayed(mScreenRecordTimeout, 31 * 60 * 1000);
+    		}
+    	}
     }
 
     private void prepareDialog() {

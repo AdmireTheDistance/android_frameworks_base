@@ -435,5 +435,10 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".screenrecord.ScreenRecordService"
+            android:process=":screenrecord"
+            android:exported="false" />
+
     </application>
 </manifest>

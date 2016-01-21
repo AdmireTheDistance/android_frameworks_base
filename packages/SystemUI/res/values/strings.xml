@@ -1138,4 +1138,12 @@
 
     <string name="clear_recents">Close all recent</string>
 
+    <!-- Screen recording -->
+    <string name="screen_record_ticker">Recording screen...</string>
+    <string name="screen_record_noti_title">Recording screen...</string>
+    <string name="screen_record_stop">Stop</string>
+    <string name="screen_record_show_pointer">Show pointer</string>
+    <string name="screen_record_hide_pointer">Hide pointer</string>
+    <string name="screen_record_error">Error recording screen</string>
+
 </resources>

@@ -3631,10 +3631,6 @@ public final class Settings {
 
         public static final String RECENTS_SHOW_SYSTEM_INFO = "show_system_info_recents";
 
-        public static final String LOCKSCREEN_SEE_THROUGH = "lockscreen_see_through";
-
-        public static final String LOCKSCREEN_BLUR_RADIUS = "lockscreen_blur_radius";
-
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.

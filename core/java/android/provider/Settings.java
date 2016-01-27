@@ -3631,6 +3631,30 @@ public final class Settings {
 
         public static final String RECENTS_SHOW_SYSTEM_INFO = "show_system_info_recents";
 
+        public static final String[] ACTIVITY_ANIMATIONS = new String[] {
+        		"activity_open",
+        		"activity_close",
+        		"task_open",
+        		"task_close",
+        		"task_to_front",
+        		"task_to_back",
+        		"wallpaper_open",
+        		"wallpaper_close",
+        		"wallpaper_intra_open",
+        		"wallpaper_intra_close",
+        		"task_open_behind"
+        };
+
+        public static final String ACTIVITY_ANIMATION_DURATION = "activity_animation_duration";
+
+        public static final String POWER_MENU_ANIMATION = "power_menu_animation";
+
+        public static final String ANIMATION_NO_OVERRIDE = "animation_no_override";
+
+        public static final String ANIMATION_EXIT_ONLY = "animation_exit_only";
+
+        public static final String ANIMATION_REVERSE_EXIT = "animation_reverse_exit";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.

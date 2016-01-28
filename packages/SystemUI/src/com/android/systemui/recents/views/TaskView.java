@@ -386,11 +386,6 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
         ctx.postAnimationTrigger.increment();
     }
 
-    /** Animates this task view away when dismissing all tasks. */
-    void startDismissAllAnimation() {
-        dismissTask(0L);
-    }
-
     /** Animates this task view as it exits recents */
     void startLaunchTaskAnimation(final Runnable postAnimRunnable, boolean isLaunchingTask,
             boolean occludesLaunchTarget, boolean lockToTask) {
@@ -437,7 +432,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
     }
 
     /** Animates the deletion of this task view */
-    void startDeleteTaskAnimation(final Runnable r, int delay) {
+    void startDeleteTaskAnimation(final Runnable r, long delay) {
         // Disabling clipping with the stack while the view is animating away
         setClipViewInStack(false);
 
@@ -446,7 +441,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
             .setStartDelay(delay)
             .setUpdateListener(null)
             .setInterpolator(mConfig.fastOutSlowInInterpolator)
-            .setDuration(mConfig.taskViewRemoveAnimDuration)
+            .setDuration(mConfig.taskViewRemoveAnimDuration - delay)
             .withEndAction(new Runnable() {
                 @Override
                 public void run() {
@@ -482,7 +477,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
     }
 
     /** Dismisses this task. */
-    void dismissTask(long delayed) {
+    void dismissTask(long delay) {
         // Animate out the view and call the callback
         final TaskView tv = this;
         startDeleteTaskAnimation(new Runnable() {
@@ -492,7 +487,7 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
                     mCb.onTaskViewDismissed(tv);
                 }
             }
-        }, 0);
+        }, delay);
     }
 
     /**

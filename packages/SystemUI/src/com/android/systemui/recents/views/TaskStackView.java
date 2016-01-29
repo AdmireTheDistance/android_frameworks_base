@@ -52,6 +52,7 @@ import com.android.systemui.recents.model.RecentsPackageMonitor;
 import com.android.systemui.recents.model.RecentsTaskLoader;
 import com.android.systemui.recents.model.Task;
 import com.android.systemui.recents.model.TaskStack;
+import com.android.systemui.recents.views.RecentsView;
 import com.android.systemui.statusbar.DismissView;
 
 import java.util.ArrayList;
@@ -80,6 +81,8 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
         public void onTaskResize(Task t);
     }
     RecentsConfiguration mConfig;
+
+    RecentsView mView;
 
     TaskStack mStack;
     TaskStackViewLayoutAlgorithm mLayoutAlgorithm;
@@ -362,7 +365,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                         mStack.removeAllTasks();
                     }
                 });
-                /*addView(mDismissAllButton, 0);*/
+                addView(mDismissAllButton, 0);
             }
 
             // Return all the invisible children to the pool
@@ -647,9 +650,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 long dismissDelay = 0;
                 int childCount = getChildCount();
                 int delay = mConfig.taskViewRemoveAnimDuration / childCount;
-                if (!dismissAll() && childCount > 1) {
-                    childCount--;
-                }
+                if (!dismissAll() && childCount > 1) childCount--;
                 for (int i = 0; i < childCount; i++) {
                     TaskView tv = (TaskView) getChildAt(i);
                     tasks.remove(tv.getTask());
@@ -1188,7 +1189,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
             TaskView frontTv = getChildViewForTask(newFrontMostTask);
             if (frontTv != null) {
                 frontTv.onTaskBound(newFrontMostTask);
-                frontTv.fadeInActionButton(0, mConfig.taskViewEnterFromAppDuration);
+                //frontTv.fadeInActionButton(0, mConfig.taskViewEnterFromAppDuration);
             }
         }
 
@@ -1349,7 +1350,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 Task tvTask = taskViews.get(i).getTask();
                 if (taskIndex < mStack.indexOfTask(tvTask)) {
                     // Offset by 1 if we have a dismiss-all button
-                    insertIndex = i + (Constants.DebugFlags.App.EnableDismissAll ? 1 : 0);
+                    insertIndex = i + (Constants.DebugFlags.App.EnableDismissAll ? 0 : 0);
                     break;
                 }
             }

@@ -21,6 +21,7 @@
   <string name="status_bar_expanded_header_weather_format"><xliff:g id="temp">%1$s</xliff:g> - <xliff:g id="condition">%2$s</xliff:g></string>
   <string name="left_shortcut_hint">Glisați dreapta pentru %1$s</string>
   <string name="right_shortcut_hint">Glisați stânga pentru %1$s</string>
+  <string name="lockscreen_default_target">Implicit</string>
   <string name="select_application">Selectați aplicația</string>
   <string name="lockscreen_choose_action_title">Alege acțiunea</string>
   <string name="lockscreen_none_target">Nimic</string>
@@ -44,8 +45,11 @@
   <string name="led_notification_title">Setări de lumină</string>
   <string name="qs_tile_edit_header_instruction">Apăsați și țineți apăsate plăcuțele pentru a rearanja</string>
   <string name="quick_settings_edit_label">Editare plăcuțe</string>
+  <string name="quick_settings_cannot_delete_edit_tile">Nu se poate șterge plăcuța Editare</string>
   <string name="quick_settings_title_header">Antet</string>
   <string name="quick_settings_title_tiles">Plăcuțe</string>
+  <string name="quick_settings_title_show_weather">Arată vremea</string>
+  <string name="quick_settings_title_show_brightness_slider">Arată glisorul de luminozitate</string>
   <string name="quick_settings_custom_tile_detail_title">Plăcuță personalizată</string>
   <string name="quick_settings_remove">Eliminare plăcuță</string>
   <string name="quick_settings_network_adb_label">ADB prin rețea</string>
@@ -53,6 +57,7 @@
   <string name="quick_settings_nfc_label">NFC</string>
   <string name="quick_settings_profiles">Profile de sistem</string>
   <string name="quick_settings_profiles_off">Profilele sunt dezactivate</string>
+  <string name="quick_settings_heads_up_label">Atenționare</string>
   <string name="accessibility_quick_settings_sync_off">Sincronizare oprită.</string>
   <string name="accessibility_quick_settings_sync_on">Sincronizare pornită.</string>
   <string name="accessibility_quick_settings_sync_changed_off">Sincronizare oprită.</string>
@@ -81,4 +86,7 @@
   <string name="accessibility_quick_settings_location_changed_battery_saving">Raportarea locației modificată în modul economisire baterie.</string>
   <string name="accessibility_quick_settings_location_changed_gps_only">Raportarea locației modificată în modul doar senzori.</string>
   <string name="accessibility_quick_settings_location_changed_high_accuracy">Raportarea locației modificată în modul precizie ridicată.</string>
+  <string name="quick_settings_tiles_category_system">Plăcuțe sistem</string>
+  <string name="quick_settings_tiles_add_tiles">Adaugă o plăcuță</string>
+  <string name="hotspot_apm_message">Nu se poate conecta la rețele mobile în timp ce modul Avion este activat. Dezactivați modul Avion și încercați din nou.</string>
 </resources>

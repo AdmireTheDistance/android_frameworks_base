@@ -89,6 +89,7 @@
     <string name="quick_settings_title_header">Header</string>
     <string name="quick_settings_title_tiles">Tiles</string>
     <string name="quick_settings_title_show_weather">Show weather</string>
+    <string name="quick_settings_title_show_brightness_slider">Show brightness slider</string>
     <string name="quick_settings_title_enlarge_first_row">Enlarge first row</string>
 
     <!-- Screen pinning dialog description (for devices without navbar) -->
@@ -240,4 +241,8 @@
 
     <!-- Hotspot dialog message -->
     <string name="hotspot_apm_message">Unable to connect to mobile networks while Airplane mode is enabled. Disable Airplane mode and try again.</string>
+
+    <!-- Notification which notifies user flashlight is enabled -->
+    <string name="quick_settings_tile_flashlight_not_title">Flashlight is on</string>
+    <string name="quick_settings_tile_flashlight_not_summary">Tap to turn off</string>
 </resources>

@@ -97,7 +97,7 @@ public class QSPage extends ViewGroup {
             record.tileView.measure(exactly(cw), exactly(ch));
             previousView = record.tileView.updateAccessibilityOrder(previousView);
         }
-        setMeasuredDimension(width, exactly(mGridHeight));
+        setMeasuredDimension(width, mGridHeight);
     }
 
     @Override
@@ -122,7 +122,11 @@ public class QSPage extends ViewGroup {
             } else {
                 right = left + tileWith;
             }
-            if (mPanel.isAnimating(record)) continue;
+            if (mPanel.isAnimating(record)) {
+                record.tileView.layout(record.tileView.getLeft(), record.tileView.getTop(),
+                        record.tileView.getRight(), record.tileView.getBottom());
+                continue;
+            }
             if (false) {
                 Log.v(TAG + "-" + mPage, "laying out " + record + ", top: " + top + ", left: " + left);
                 Log.d(TAG, record + " wiping translations: "

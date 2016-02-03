@@ -1195,6 +1195,7 @@ public class AppTransition implements Dump {
                     } else {
                         animAttr = enter ? WindowAnimation_launchTaskBehindSourceAnimation : WindowAnimation_launchTaskBehindTargetAnimation;
                     }
+                    break;
             }
             a = animAttr != 0 ? loadAnimationAttr(lp, animAttr) : null;
             if (a != null) {

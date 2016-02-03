@@ -274,13 +274,6 @@ public class DownloadManager {
     public final static int PAUSED_BY_MANUAL = 5;
 
     /**
-     * Value of {@link #COLUMN_REASON} when the download is manually paused.
-	 *
-	 * @hide
-	 */
-    public final static int PAUSED_BY_MANUAL = 5;
-
-    /**
      * Broadcast intent action sent by the download manager when a download completes.
      */
     @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
@@ -1125,7 +1118,7 @@ public class DownloadManager {
     	ContentValues values = new ContentValues();
     	values.put(Downloads.Impl.COLUMN_STATUS, Downloads.Impl.STATUS_PAUSED_BY_MANUAL);
 
-    	return mResolver.update(ContentUris.withAppendedId(mBaseUri, id), values, nullo, null);
+    	return mResolver.update(ContentUris.withAppendedId(mBaseUri, id), values, null, null);
     }
 
     /**
@@ -1140,34 +1133,6 @@ public class DownloadManager {
     	values.put(Downloads.Impl.COLUMN_STATUS, Downloads.Impl.STATUS_RUNNING);
 
     	return mResolver.update(ContentUris.withAppendedId(mBaseUri, id), values, null, null);
-    }
-
-    /**
-     * Pause the given running download by manual.
-     *
-     * @param id the ID of the download to be paused
-     * @return the number of downloads actually updated
-     * @hide
-     */
-    public int pauseDownload(long id) {
-        ContentValues values = new ContentValues();
-        values.put(Downloads.Impl.COLUMN_STATUS, Downloads.Impl.STATUS_PAUSED_BY_MANUAL);
-
-        return mResolver.update(ContentUris.withAppendedId(mBaseUri, id), values, null, null);
-    }
-
-    /**
-     * Resume the given paused download by manual.
-     *
-     * @param id the ID of the download to be resumed
-     * @return the number of downloads actually updated
-     * @hide
-     */
-    public int resumeDownload(long id) {
-       ContentValues values = new ContentValues();
-       values.put(Downloads.Impl.COLUMN_STATUS, Downloads.Impl.STATUS_RUNNING);
-
-       return mResolver.update(ContentUris.withAppendedId(mBaseUri, id), values, null, null);
     }
 
     /**
